@@ -8,6 +8,8 @@ WORKDIR /app
 
 COPY . .
 
+RUN touch /app/database/database.sqlite
+
 RUN curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer
 
@@ -15,8 +17,11 @@ RUN composer install --no-dev --optimize-autoloader
 
 RUN npm install && npm run build
 
+RUN php artisan key:generate --force
+
 RUN php artisan config:clear
 RUN php artisan cache:clear
+RUN php artisan migrate --force
 
 EXPOSE 10000
 
